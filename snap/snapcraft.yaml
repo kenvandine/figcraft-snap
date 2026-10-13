@@ -1,0 +1,74 @@
+name: figcraft
+title: FigCraft
+base: core24
+version: '0.5.1'
+summary: Design and prototype user interfaces
+description: |
+  FigCraft is an open-source, native interface design and prototyping tool: lay out screens on an infinite canvas with frames, auto layout and constraints, build reusable components and variants, and link screens into clickable prototypes.
+
+  FigCraft is part of the open-source ArtCraft "Crafting Apps": a native Rust
+  application that runs locally on your own files and can be driven from a CLI,
+  a JSON control channel or an MCP server.
+
+  This snap repackages the official upstream Linux release. The headless
+  command line tool is available as figcraft.cli.
+license: MIT OR Apache-2.0
+website: https://getartcraft.com/apps/figcraft
+source-code: https://github.com/storytold/figcraft
+issues: https://github.com/storytold/figcraft/issues
+contact: https://github.com/kenvandine/figcraft-snap/issues
+icon: snap/gui/figcraft.png
+grade: stable
+confinement: strict
+
+platforms:
+  amd64:
+  arm64:
+
+apps:
+  figcraft:
+    command: bin/figcraft
+    extensions: [gnome]
+    common-id: ai.storyteller.figcraft
+    plugs:
+      - audio-playback
+      - home
+      - network
+      - network-bind
+      - opengl
+      - removable-media
+  cli:
+    command: bin/figcraft-cli
+    extensions: [gnome]
+    plugs:
+      - home
+      - network
+      - network-bind
+      - removable-media
+
+parts:
+  figcraft:
+    plugin: nil
+    build-packages:
+      - ca-certificates
+      - curl
+    stage-packages:
+      - libvulkan1
+      - libxkbcommon-x11-0
+    override-pull: |
+      set -eu
+      case "$CRAFT_ARCH_BUILD_FOR" in
+        amd64) arch=x86_64 ;;
+        arm64) arch=aarch64 ;;
+        *) echo "unsupported architecture: $CRAFT_ARCH_BUILD_FOR" >&2; exit 1 ;;
+      esac
+      name="figcraft-${CRAFT_PROJECT_VERSION}-linux-${arch}"
+      url="https://github.com/storytold/figcraft/releases/download/v${CRAFT_PROJECT_VERSION}"
+      curl -fsSL --retry 3 -o "${name}.tar.gz" "${url}/${name}.tar.gz"
+      curl -fsSL --retry 3 -o SHA256SUMS.txt "${url}/SHA256SUMS.txt"
+      grep -E "[ *]${name}\.tar\.gz\$" SHA256SUMS.txt | sha256sum -c -
+      tar xzf "${name}.tar.gz" --strip-components=1
+      rm -f "${name}.tar.gz" SHA256SUMS.txt
+    override-build: |
+      set -eu
+      cp -a bin share "$CRAFT_PART_INSTALL/"
