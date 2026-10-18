@@ -1,7 +1,7 @@
 name: figcraft
 title: FigCraft
 base: core24
-version: '0.6.0'
+version: '0.7.0'
 summary: Design and prototype user interfaces
 description: |
   FigCraft is an open-source, native interface design and prototyping tool: lay out screens on an infinite canvas with frames, auto layout and constraints, build reusable components and variants, and link screens into clickable prototypes.
