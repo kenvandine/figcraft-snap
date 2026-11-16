@@ -1,6 +1,6 @@
 name: figcraft
 title: FigCraft
-base: core24
+base: core26
 version: '0.18.1'
 summary: Design and prototype user interfaces
 description: |
